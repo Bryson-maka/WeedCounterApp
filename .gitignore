@@ -1,0 +1,25 @@
+
+# Xcode
+.DS_Store
+xcuserdata/
+*.xcodeproj/*
+init.xcodeproj/project.pbxproj
+init.xcodeproj/xcshareddata/
+init.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# CocoaPods
+Pods/
+
+# Swift Package Manager
+.build/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Code Injection
+iOSInjectionProject/
+
