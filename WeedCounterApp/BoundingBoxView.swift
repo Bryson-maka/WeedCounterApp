@@ -4,7 +4,7 @@ struct BoundingBoxView: View {
     let image: UIImage
     @State private var boxSize: CGSize
     @State private var orientation: (pitch: Double, roll: Double)?
-    
+    @State private var markedPlants: [CGPoint] = []
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
@@ -52,15 +52,36 @@ struct BoundingBoxView: View {
                     .stroke(Color.red, lineWidth: 2)
                     .frame(width: boxSize.width, height: boxSize.height)
                 
+                ForEach(markedPlants.indices, id: \.self) { index in
+                    Circle()
+                        .fill(Color.green)
+                        .frame(width: 10, height: 10)
+                        .position(markedPlants[index])
+                }
+                
                 VStack {
                     Spacer()
-                    Text("Pitch: \(orientation?.pitch.rounded(to: 2) ?? 0), Roll: \(orientation?.roll.rounded(to: 2) ?? 0)")
-                        .padding()
-                        .background(Color.black.opacity(0.7))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                    HStack {
+                        Text("Plants: \(markedPlants.count)")
+                        Spacer()
+                        Text("Pitch: \(orientation?.pitch.rounded(to: 2) ?? 0), Roll: \(orientation?.roll.rounded(to: 2) ?? 0)")
+                    }
+                    .padding()
+                    .background(Color.black.opacity(0.7))
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
                 }
             }
+            .contentShape(Rectangle())
+            .gesture(
+                TapGesture()
+                    .onEnded { location in
+                        let tapLocation = geometry.frame(in: .local).origin + location
+                        if isWithinBoundingBox(point: tapLocation, in: geometry) {
+                            markedPlants.append(tapLocation)
+                        }
+                    }
+            )
         }
         .onAppear {
             startOrientationUpdates()
@@ -71,6 +92,21 @@ struct BoundingBoxView: View {
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
             orientation = CameraCalibration.shared.getDeviceOrientation()
         }
+    }
+    
+    private func isWithinBoundingBox(point: CGPoint, in geometry: GeometryProxy) -> Bool {
+        let boxOrigin = CGPoint(
+            x: (geometry.size.width - boxSize.width) / 2,
+            y: (geometry.size.height - boxSize.height) / 2
+        )
+        let boxRect = CGRect(origin: boxOrigin, size: boxSize)
+        return boxRect.contains(point)
+    }
+}
+
+extension CGPoint {
+    static func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+        return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
     }
 }
 
