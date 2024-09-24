@@ -4,12 +4,10 @@ struct ContentView: View {
     @State private var capturedImage: UIImage?
     @State private var isCameraActive = false
     
-    let boxSize = CGSize(width: 300, height: 300) // Adjust this size as needed
-    
     var body: some View {
         VStack {
             if let image = capturedImage {
-                BoundingBoxView(image: image, boxSize: boxSize)
+                BoundingBoxView(image: image)
             } else {
                 Text("No image captured")
             }
