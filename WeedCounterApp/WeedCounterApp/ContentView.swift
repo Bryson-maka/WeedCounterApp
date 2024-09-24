@@ -1,24 +1,31 @@
-//
-//  ContentView.swift
-//  WeedCounterApp
-//
-//  Created by Bryson Corey on 9/23/24.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+    @State private var capturedImage: UIImage?
+    @State private var isCameraActive = false
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            if let image = capturedImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                Text("No image captured")
+            }
+            
+            Button("Capture Image") {
+                isCameraActive = true
+            }
         }
-        .padding()
+        .sheet(isPresented: $isCameraActive) {
+            CameraView(capturedImage: $capturedImage, isCameraActive: $isCameraActive)
+        }
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
